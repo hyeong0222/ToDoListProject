@@ -5,11 +5,14 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistproject.R
 import com.example.todolistproject.model.Task
 import com.example.todolistproject.view.adapter.TaskAdapter
+import com.example.todolistproject.viewmodel.TaskViewModel
 import java.util.*
 
 class TaskActivity : AppCompatActivity() {
@@ -17,7 +20,7 @@ class TaskActivity : AppCompatActivity() {
     private lateinit var rvTodoList: RecyclerView
     private lateinit var btnAddTask: Button
     private lateinit var mAdapter: TaskAdapter
-    private val taskList = ArrayList<Task>()
+    private lateinit var mViewModel: TaskViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,10 +28,11 @@ class TaskActivity : AppCompatActivity() {
 
         initRecyclerView()
         initAddTaskButton()
+        initViewModel()
     }
 
     private fun initRecyclerView() {
-        mAdapter = TaskAdapter(taskList)
+        mAdapter = TaskAdapter()
 
         rvTodoList = findViewById(R.id.rv_todo_list)
         rvTodoList.run {
@@ -42,6 +46,16 @@ class TaskActivity : AppCompatActivity() {
         btnAddTask.setOnClickListener {
             openAddTaskDialog()
         }
+    }
+
+    private fun initViewModel() {
+        mViewModel =
+            ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(
+                TaskViewModel::class.java
+            )
+        mViewModel.getTaskList().observe(this, Observer {
+            mAdapter.setTaskItems(it)
+        })
     }
 
     private fun openAddTaskDialog() {
@@ -58,9 +72,9 @@ class TaskActivity : AppCompatActivity() {
                     val description = etTaskDescription.text.toString()
                     val date = Date().time
 
-                    val task = Task(title = title, description = description, date = date)
-                    mAdapter.addItem(task)
-                    mAdapter.notifyDataSetChanged()
+                    val task =
+                        Task(id = null, title = title, description = description, date = date)
+                    mViewModel.insertTask(task)
                 }
                 .setNegativeButton("Cancel", null)
                 .create()

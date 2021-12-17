@@ -10,10 +10,13 @@ import com.example.todolistproject.model.Task
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TaskAdapter(private val taskList: ArrayList<Task>) : RecyclerView.Adapter<TaskViewHolder>() {
+class TaskAdapter() : RecyclerView.Adapter<TaskViewHolder>() {
 
-    fun addItem(task: Task) {
-        taskList.add(task)
+    private var taskList: List<Task> = listOf()
+
+    fun setTaskItems(tasks: List<Task>) {
+        taskList = tasks
+        notifyDataSetChanged()
     }
 
 
@@ -34,9 +37,9 @@ class TaskAdapter(private val taskList: ArrayList<Task>) : RecyclerView.Adapter<
 
 class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    val tvTitle: TextView = view.findViewById(R.id.tv_title)
-    val tvDescription: TextView = view.findViewById(R.id.tv_description)
-    val tvDate: TextView = view.findViewById(R.id.tv_date)
+    private val tvTitle: TextView = view.findViewById(R.id.tv_title)
+    private val tvDescription: TextView = view.findViewById(R.id.tv_description)
+    private val tvDate: TextView = view.findViewById(R.id.tv_date)
 
     fun bind(task: Task) {
         tvTitle.text = task.title
