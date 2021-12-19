@@ -33,4 +33,20 @@ class TaskRepository(application: Application) {
                 // Handle error
             })
     }
+
+    fun updateTask(task: Task) {
+        Observable.just(task).subscribeOn(Schedulers.io()).subscribe({
+            mTaskDao.updateTask(task)
+        }, {
+            // Handle error
+        })
+    }
+
+    fun deleteTask(task: Task) {
+        Observable.just(task).subscribeOn(Schedulers.io()).subscribe({
+            mTaskDao.deleteTask(task)
+        }, {
+            // Handle error
+        })
+    }
 }

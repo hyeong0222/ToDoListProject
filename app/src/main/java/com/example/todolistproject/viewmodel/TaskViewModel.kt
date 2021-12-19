@@ -24,4 +24,12 @@ class TaskViewModel(application: Application): AndroidViewModel(application) {
     fun getTaskList(): LiveData<List<Task>> {
         return mTaskList
     }
+
+    fun updateTask(task: Task) {
+        mTaskRepository.updateTask(task)
+    }
+
+    fun deleteTask(task: Task) {
+        mTaskRepository.deleteTask(task)
+    }
 }

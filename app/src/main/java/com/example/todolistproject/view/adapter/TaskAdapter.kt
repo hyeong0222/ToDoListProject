@@ -18,6 +18,15 @@ class TaskAdapter() : RecyclerView.Adapter<TaskViewHolder>() {
 
     private var taskList: List<Task> = listOf()
 
+    interface OnTaskItemClickListener {
+        fun onTaskItemClick(position: Int)
+        fun onTaskItemLongClick(position: Int)
+    }
+
+    var listener: OnTaskItemClickListener? = null
+
+    fun getItem(position: Int): Task = taskList[position]
+
     fun setTaskItems(tasks: List<Task>) {
         Observable.just(tasks).subscribeOn(AndroidSchedulers.mainThread())
             .observeOn(Schedulers.io())
@@ -33,7 +42,8 @@ class TaskAdapter() : RecyclerView.Adapter<TaskViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
-        return TaskViewHolder(view)
+        val viewHolder = TaskViewHolder(view, listener)
+        return viewHolder
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
@@ -46,11 +56,22 @@ class TaskAdapter() : RecyclerView.Adapter<TaskViewHolder>() {
     }
 }
 
-class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+class TaskViewHolder(view: View, listener: TaskAdapter.OnTaskItemClickListener?) : RecyclerView.ViewHolder(view) {
 
     private val tvTitle: TextView = view.findViewById(R.id.tv_title)
     private val tvDescription: TextView = view.findViewById(R.id.tv_description)
     private val tvDate: TextView = view.findViewById(R.id.tv_date)
+
+    init {
+        view.setOnClickListener {
+            listener?.onTaskItemClick(bindingAdapterPosition)
+        }
+
+        view.setOnLongClickListener {
+            listener?.onTaskItemLongClick(bindingAdapterPosition)
+            return@setOnLongClickListener true
+        }
+    }
 
     fun bind(task: Task) {
         tvTitle.text = task.title

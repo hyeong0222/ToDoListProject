@@ -32,7 +32,18 @@ class TaskActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerView() {
-        mAdapter = TaskAdapter()
+        mAdapter = TaskAdapter().apply {
+            listener = object : TaskAdapter.OnTaskItemClickListener {
+                override fun onTaskItemClick(position: Int) {
+                    openModifyTaskDialog(getItem(position))
+                }
+
+                override fun onTaskItemLongClick(position: Int) {
+                    openDeleteTaskDialog(getItem(position))
+                }
+
+            }
+        }
 
         rvTodoList = findViewById(R.id.rv_todo_list)
         rvTodoList.run {
@@ -78,6 +89,37 @@ class TaskActivity : AppCompatActivity() {
                 }
                 .setNegativeButton("Cancel", null)
                 .create()
+        dialog.show()
+    }
+
+    private fun openModifyTaskDialog(task: Task) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_task, null)
+        val etTaskTitle: EditText = dialogView.findViewById(R.id.et_task_title)
+        val etTaskDescription: EditText = dialogView.findViewById(R.id.et_task_description)
+
+        etTaskTitle.setText(task.title)
+        etTaskDescription.setText(task.description)
+
+        val dialog = AlertDialog.Builder(this).setTitle("Edit Task").setView(dialogView)
+            .setPositiveButton("Okay") { _, _ ->
+                val title = etTaskTitle.text.toString()
+                val description = etTaskDescription.text.toString()
+
+                task.title = title
+                task.description = description
+
+                mViewModel.updateTask(task)
+            }
+            .setNegativeButton("Cancel", null)
+            .create()
+        dialog.show()
+    }
+
+    private fun openDeleteTaskDialog(task: Task) {
+        val dialog = AlertDialog.Builder(this).setTitle("Delete Task")
+            .setMessage("Do you want to remove this task?").setPositiveButton("Yes") { _, _ ->
+                mViewModel.deleteTask(task)
+            }.setNegativeButton("No", null).create()
         dialog.show()
     }
 }
