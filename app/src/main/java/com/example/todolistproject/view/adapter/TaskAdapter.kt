@@ -4,9 +4,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistproject.R
 import com.example.todolistproject.model.Task
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -15,8 +19,15 @@ class TaskAdapter() : RecyclerView.Adapter<TaskViewHolder>() {
     private var taskList: List<Task> = listOf()
 
     fun setTaskItems(tasks: List<Task>) {
-        taskList = tasks
-        notifyDataSetChanged()
+        Observable.just(tasks).subscribeOn(AndroidSchedulers.mainThread())
+            .observeOn(Schedulers.io())
+            .map { DiffUtil.calculateDiff(TaskDiffCallback(taskList, tasks)) }
+            .subscribe(
+                {
+                    this.taskList = tasks
+                    it.dispatchUpdatesTo(this)
+                }, {}
+            )
     }
 
 
