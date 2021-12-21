@@ -2,8 +2,10 @@ package com.example.todolistproject.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todolistproject.R
@@ -20,10 +22,6 @@ class TaskActivity : AppCompatActivity() {
     private lateinit var mAdapter: TaskAdapter
     private lateinit var mViewModel: TaskViewModel
 
-    private val dialogBinding: DialogAddTaskBinding by lazy {
-        DialogAddTaskBinding.inflate(layoutInflater)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -31,6 +29,7 @@ class TaskActivity : AppCompatActivity() {
 
         initRecyclerView()
         initViewModel()
+        observeViewModel()
     }
 
     private fun initRecyclerView() {
@@ -43,7 +42,6 @@ class TaskActivity : AppCompatActivity() {
                 override fun onTaskItemLongClick(position: Int) {
                     openDeleteTaskDialog(getItem(position))
                 }
-
             }
         }
 
@@ -57,42 +55,63 @@ class TaskActivity : AppCompatActivity() {
         mViewModel =
             ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(
                 TaskViewModel::class.java
-            )
-        mViewModel.getTaskList().observe(this, {
+            ).also {
+                binding.viewModel = it
+            }
+    }
+
+    private fun observeViewModel() {
+        mViewModel.getTaskList().observe(this, Observer {
             mAdapter.setTaskItems(it)
         })
     }
 
     fun openAddTaskDialog() {
-        val dialog =
-            AlertDialog.Builder(this).setTitle("Add task").setView(dialogBinding.root)
-                .setPositiveButton("Add") { _, _ ->
-                    val title = dialogBinding.etTaskTitle.text.toString()
-                    val description = dialogBinding.etTaskDescription.text.toString()
-                    val date = Date().time
+        val dialogViewBinding = DialogAddTaskBinding.inflate(LayoutInflater.from(this))
 
-                    val task =
-                        Task(id = null, title = title, description = description, date = date)
-                    mViewModel.insertTask(task)
+        val dialog =
+            AlertDialog.Builder(this).setTitle("Add task").setView(dialogViewBinding.root)
+                .setPositiveButton("Add") { dialog, _ ->
+                    addTask(dialogViewBinding)
+                    dialog.dismiss()
                 }
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
                 .create()
         dialog.show()
     }
 
-    private fun openModifyTaskDialog(task: Task) {
-        val dialog = AlertDialog.Builder(this).setTitle("Edit Task").setView(dialogBinding.root)
-            .setPositiveButton("Okay") { _, _ ->
-                val title = dialogBinding.etTaskTitle.text.toString()
-                val description = dialogBinding.etTaskDescription.text.toString()
+    private fun addTask(dialogViewBinding: DialogAddTaskBinding) {
+        val title = dialogViewBinding.etTaskTitle.text.toString()
+        val description = dialogViewBinding.etTaskDescription.text.toString()
+        val date = Date().time
 
-                task.title = title
-                task.description = description
-                mViewModel.updateTask(task)
+        val task =
+            Task(id = null, title = title, description = description, date = date)
+        mViewModel.insertTask(task)
+    }
+
+    private fun openModifyTaskDialog(task: Task) {
+        val dialogViewBinding = DialogAddTaskBinding.inflate(LayoutInflater.from(this))
+
+        val dialog = AlertDialog.Builder(this).setTitle("Edit Task").setView(dialogViewBinding.root)
+            .setPositiveButton("Okay") { dialog, _ ->
+                modifyTask(dialogViewBinding, task)
+                dialog.dismiss()
             }
-            .setNegativeButton("Cancel", null)
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
             .create()
         dialog.show()
+    }
+
+    private fun modifyTask(dialogViewBinding: DialogAddTaskBinding, task: Task) {
+        val title = dialogViewBinding.etTaskTitle.text.toString()
+        val description = dialogViewBinding.etTaskDescription.text.toString()
+
+        task.title = title
+        task.description = description
+        mViewModel.updateTask(task)
     }
 
     private fun openDeleteTaskDialog(task: Task) {

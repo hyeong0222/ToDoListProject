@@ -1,8 +1,9 @@
 package com.example.todolistproject.view.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -42,19 +43,16 @@ class TaskAdapter : RecyclerView.Adapter<TaskViewHolder>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
-        return TaskViewHolder(view, listener)
+        return DataBindingUtil.inflate<ItemTaskBinding>(
+            LayoutInflater.from(parent.context),
+            R.layout.item_task,
+            parent,
+            false
+        ).let { TaskViewHolder(it, listener) }
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        val task = taskList[position]
-        holder.binding?.let {
-            it.apply {
-                tvTitle.text = task.title
-                tvDescription.text = task.description
-                tvDate.text = task.date.toDateString("yyyy.MM.dd HH:mm")
-            }
-        }
+        (holder as? TaskViewHolder)?.bind(taskList.getOrNull(position) ?: return)
     }
 
     override fun getItemCount(): Int {
@@ -67,17 +65,31 @@ class TaskAdapter : RecyclerView.Adapter<TaskViewHolder>() {
     }
 }
 
-class TaskViewHolder(view: View, listener: TaskAdapter.OnTaskItemClickListener?) : RecyclerView.ViewHolder(view) {
-    var binding: ItemTaskBinding? = DataBindingUtil.bind(view)
+class TaskViewHolder(
+    private val binding: ItemTaskBinding,
+    listener: TaskAdapter.OnTaskItemClickListener?
+) :
+    RecyclerView.ViewHolder(binding.root) {
 
     init {
-        view.setOnClickListener {
+        itemView.setOnClickListener {
             listener?.onTaskItemClick(bindingAdapterPosition)
         }
 
-        view.setOnLongClickListener {
+        itemView.setOnLongClickListener {
             listener?.onTaskItemLongClick(bindingAdapterPosition)
             return@setOnLongClickListener true
         }
     }
+
+    fun bind(task: Task) {
+        binding.task = task
+        binding.executePendingBindings()
+    }
+}
+
+@BindingAdapter("taskDate")
+fun setTaskDate(tv: TextView, date: Long) {
+    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+    tv.text = sdf.format(date)
 }
