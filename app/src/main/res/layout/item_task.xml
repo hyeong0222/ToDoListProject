@@ -3,6 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="task"
+            type="com.example.todolistproject.model.Task" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,6 +20,7 @@
             android:layout_height="wrap_content"
             android:textColor="#000000"
             android:textSize="16sp"
+            android:text="@{task.title}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -25,6 +32,7 @@
             android:layout_height="wrap_content"
             android:textColor="#808080"
             android:textSize="12sp"
+            android:text="@{task.description}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_title"
@@ -36,11 +44,11 @@
             android:layout_height="wrap_content"
             android:textColor="#cccccc"
             android:textSize="12sp"
+            app:taskDate="@{task.date}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_description"
             tools:text="2021.12.31 00:00" />
-        
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

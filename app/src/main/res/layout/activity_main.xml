@@ -8,8 +8,8 @@
             name="activity"
             type="com.example.todolistproject.view.TaskActivity" />
         <variable
-            name="task"
-            type="com.example.todolistproject.model.Task" />
+            name="viewModel"
+            type="com.example.todolistproject.viewmodel.TaskViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
