@@ -30,8 +30,8 @@ class TaskAdapter : RecyclerView.Adapter<TaskViewHolder>() {
     fun getItem(position: Int): Task = taskList[position]
 
     fun setTaskItems(tasks: List<Task>) {
-        Observable.just(tasks).subscribeOn(AndroidSchedulers.mainThread())
-            .observeOn(Schedulers.io())
+        Observable.just(tasks).subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
             .map { DiffUtil.calculateDiff(TaskDiffCallback(taskList, tasks)) }
             .subscribe(
                 {
