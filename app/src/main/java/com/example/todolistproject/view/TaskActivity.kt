@@ -3,6 +3,7 @@ package com.example.todolistproject.view
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
@@ -62,6 +63,7 @@ class TaskActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         mViewModel.getTaskList().observe(this, Observer {
+            binding.progressIndicator.visibility = View.GONE
             mAdapter.setTaskItems(it)
         })
     }
