@@ -6,19 +6,15 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistproject.R
 import com.example.todolistproject.databinding.ItemTaskBinding
 import com.example.todolistproject.model.Task
-import io.reactivex.Observable
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import java.text.SimpleDateFormat
 import java.util.*
 
-class TaskAdapter : RecyclerView.Adapter<TaskViewHolder>() {
-
-    private var taskList: List<Task> = listOf()
+class TaskAdapter : ListAdapter<Task, TaskViewHolder>(diffUtil) {
 
     interface OnTaskItemClickListener {
         fun onTaskItemClick(position: Int)
@@ -27,20 +23,9 @@ class TaskAdapter : RecyclerView.Adapter<TaskViewHolder>() {
 
     var listener: OnTaskItemClickListener? = null
 
-    fun getItem(position: Int): Task = taskList[position]
+    public override fun getItem(position: Int): Task = super.getItem(position)
 
-    fun setTaskItems(tasks: List<Task>) {
-        Observable.just(tasks).subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .map { DiffUtil.calculateDiff(TaskDiffCallback(taskList, tasks)) }
-            .subscribe(
-                {
-                    this.taskList = tasks
-                    it.dispatchUpdatesTo(this)
-                }, {}
-            )
-    }
-
+    fun setTaskItems(list: List<Task>) = submitList(list)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         return DataBindingUtil.inflate<ItemTaskBinding>(
@@ -52,29 +37,36 @@ class TaskAdapter : RecyclerView.Adapter<TaskViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
-        (holder as? TaskViewHolder)?.bind(taskList.getOrNull(position) ?: return)
+        (holder as? TaskViewHolder)?.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int {
-        return taskList.size
+    @BindingAdapter("taskDate")
+    fun setTaskDate(tv: TextView, date: Long) {
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+        tv.text = sdf.format(date)
     }
 
-    private fun Long.toDateString(format: String): String {
-        val sdf = SimpleDateFormat(format, Locale.ROOT)
-        return sdf.format(Date(this))
+    companion object {
+        val diffUtil = object : DiffUtil.ItemCallback<Task>() {
+            override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
+                return oldItem == newItem
+            }
+
+            override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
+                return oldItem.id == newItem.id
+            }
+
+        }
     }
 }
 
 class TaskViewHolder(
     private val binding: ItemTaskBinding,
     listener: TaskAdapter.OnTaskItemClickListener?
-) :
-    RecyclerView.ViewHolder(binding.root) {
+) : RecyclerView.ViewHolder(binding.root) {
 
     init {
-        itemView.setOnClickListener {
-            listener?.onTaskItemClick(bindingAdapterPosition)
-        }
+        itemView.setOnClickListener { listener?.onTaskItemClick(bindingAdapterPosition) }
 
         itemView.setOnLongClickListener {
             listener?.onTaskItemLongClick(bindingAdapterPosition)
@@ -86,10 +78,4 @@ class TaskViewHolder(
         binding.task = task
         binding.executePendingBindings()
     }
-}
-
-@BindingAdapter("taskDate")
-fun setTaskDate(tv: TextView, date: Long) {
-    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-    tv.text = sdf.format(date)
 }
