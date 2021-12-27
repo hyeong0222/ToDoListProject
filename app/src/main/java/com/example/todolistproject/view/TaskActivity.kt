@@ -94,6 +94,7 @@ class TaskActivity : AppCompatActivity() {
 
     private fun openModifyTaskDialog(task: Task) {
         val dialogViewBinding = DialogAddTaskBinding.inflate(LayoutInflater.from(this))
+        dialogViewBinding.task = task
 
         val dialog = AlertDialog.Builder(this).setTitle("Edit Task").setView(dialogViewBinding.root)
             .setPositiveButton("Okay") { dialog, _ ->
@@ -108,12 +109,14 @@ class TaskActivity : AppCompatActivity() {
     }
 
     private fun modifyTask(dialogViewBinding: DialogAddTaskBinding, task: Task) {
-        val title = dialogViewBinding.etTaskTitle.text.toString()
-        val description = dialogViewBinding.etTaskDescription.text.toString()
+        // We must deep copy the task object in order for the DiffUtil to recognize and compare the
+        // new object with the old one.
+        val modifiedTask = task.copy()
+        modifiedTask.title = dialogViewBinding.etTaskTitle.text.toString()
+        modifiedTask.description = dialogViewBinding.etTaskDescription.text.toString()
+        modifiedTask.date = Date().time
 
-        task.title = title
-        task.description = description
-        mViewModel.updateTask(task)
+        mViewModel.updateTask(modifiedTask)
     }
 
     private fun openDeleteTaskDialog(task: Task) {
