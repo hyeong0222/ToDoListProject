@@ -40,12 +40,6 @@ class TaskAdapter : ListAdapter<Task, TaskViewHolder>(diffUtil) {
         (holder as? TaskViewHolder)?.bind(getItem(position))
     }
 
-    @BindingAdapter("taskDate")
-    fun setTaskDate(tv: TextView, date: Long) {
-        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-        tv.text = sdf.format(date)
-    }
-
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<Task>() {
             override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
@@ -78,4 +72,10 @@ class TaskViewHolder(
         binding.task = task
         binding.executePendingBindings()
     }
+}
+
+@BindingAdapter("taskDate")
+fun setTaskDate(tv: TextView, date: Long) {
+    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+    tv.text = sdf.format(date)
 }
