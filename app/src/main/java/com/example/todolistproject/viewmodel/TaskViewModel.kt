@@ -21,7 +21,7 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
     fun insertTask(task: Task) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { mTaskRepository.insertTask(task) }
+            mTaskRepository.insertTask(task)
         }
     }
 
@@ -31,13 +31,13 @@ class TaskViewModel(application: Application) : AndroidViewModel(application) {
 
     fun updateTask(task: Task) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { mTaskRepository.updateTask(task) }
+            mTaskRepository.updateTask(task)
         }
     }
 
     fun deleteTask(task: Task) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { mTaskRepository.deleteTask(task) }
+            mTaskRepository.deleteTask(task)
         }
     }
 }
