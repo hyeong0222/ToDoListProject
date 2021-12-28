@@ -5,9 +5,7 @@ import androidx.lifecycle.LiveData
 import com.example.todolistproject.database.TaskDatabase
 import com.example.todolistproject.database.dao.TaskDao
 import com.example.todolistproject.model.Task
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 
 class TaskRepository(application: Application) {
 
@@ -28,25 +26,14 @@ class TaskRepository(application: Application) {
     }
 
     fun insertTask(task: Task) {
-        Observable.just(task).subscribeOn(Schedulers.io())
-            .subscribe({ mTaskDao.insertTask(task) }, {
-                // Handle error
-            })
+        mTaskDao.insertTask(task)
     }
 
     fun updateTask(task: Task) {
-        Observable.just(task).subscribeOn(Schedulers.io()).subscribe({
-            mTaskDao.updateTask(task)
-        }, {
-            // Handle error
-        })
+        mTaskDao.updateTask(task)
     }
 
     fun deleteTask(task: Task) {
-        Observable.just(task).subscribeOn(Schedulers.io()).subscribe({
-            mTaskDao.deleteTask(task)
-        }, {
-            // Handle error
-        })
+        mTaskDao.deleteTask(task)
     }
 }
