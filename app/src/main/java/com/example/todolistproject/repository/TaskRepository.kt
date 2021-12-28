@@ -6,6 +6,8 @@ import com.example.todolistproject.database.TaskDatabase
 import com.example.todolistproject.database.dao.TaskDao
 import com.example.todolistproject.model.Task
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class TaskRepository(application: Application) {
 
@@ -25,15 +27,21 @@ class TaskRepository(application: Application) {
         return mTask
     }
 
-    fun insertTask(task: Task) {
-        mTaskDao.insertTask(task)
+    suspend fun insertTask(task: Task) {
+        withContext(Dispatchers.IO) {
+            mTaskDao.insertTask(task)
+        }
     }
 
-    fun updateTask(task: Task) {
-        mTaskDao.updateTask(task)
+    suspend fun updateTask(task: Task) {
+        withContext(Dispatchers.IO) {
+            mTaskDao.updateTask(task)
+        }
     }
 
-    fun deleteTask(task: Task) {
-        mTaskDao.deleteTask(task)
+    suspend fun deleteTask(task: Task) {
+        withContext(Dispatchers.IO) {
+            mTaskDao.deleteTask(task)
+        }
     }
 }
