@@ -6,11 +6,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.todolistproject.model.Task
 import com.example.todolistproject.repository.TaskRepository
-import kotlinx.coroutines.Dispatchers
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class TaskViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class TaskViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
     private val mTaskRepository: TaskRepository
     private var mTaskList: LiveData<List<Task>>
 

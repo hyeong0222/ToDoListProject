@@ -6,8 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todolistproject.R
 import com.example.todolistproject.databinding.ActivityMainBinding
@@ -15,13 +14,18 @@ import com.example.todolistproject.databinding.DialogAddTaskBinding
 import com.example.todolistproject.model.Task
 import com.example.todolistproject.view.adapter.TaskAdapter
 import com.example.todolistproject.viewmodel.TaskViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class TaskActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var mAdapter: TaskAdapter
-    private lateinit var mViewModel: TaskViewModel
+
+    @Inject
+    lateinit var mAdapter: TaskAdapter
+    private val mViewModel by viewModels<TaskViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +33,11 @@ class TaskActivity : AppCompatActivity() {
         binding.activity = this@TaskActivity
 
         initRecyclerView()
-        initViewModel()
         observeViewModel()
     }
 
     private fun initRecyclerView() {
-        mAdapter = TaskAdapter().apply {
+        mAdapter?.apply {
             listener = object : TaskAdapter.OnTaskItemClickListener {
                 override fun onTaskItemClick(position: Int) {
                     openModifyTaskDialog(getItem(position))
@@ -52,17 +55,8 @@ class TaskActivity : AppCompatActivity() {
         }
     }
 
-    private fun initViewModel() {
-        mViewModel =
-            ViewModelProvider(this, ViewModelProvider.AndroidViewModelFactory(application)).get(
-                TaskViewModel::class.java
-            ).also {
-                binding.viewModel = it
-            }
-    }
-
     private fun observeViewModel() {
-        mViewModel.getTaskList().observe(this, Observer {
+        mViewModel.getTaskList().observe(this, {
             binding.progressIndicator.visibility = View.GONE
             mAdapter.setTaskItems(it)
         })
