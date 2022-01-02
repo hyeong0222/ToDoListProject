@@ -13,8 +13,11 @@ import com.example.todolistproject.databinding.ItemTaskBinding
 import com.example.todolistproject.model.Task
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class TaskAdapter : ListAdapter<Task, TaskViewHolder>(diffUtil) {
+@Singleton
+class TaskAdapter @Inject constructor() : ListAdapter<Task, TaskViewHolder>(diffUtil) {
 
     interface OnTaskItemClickListener {
         fun onTaskItemClick(position: Int)
