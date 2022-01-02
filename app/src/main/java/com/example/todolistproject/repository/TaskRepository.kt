@@ -8,8 +8,11 @@ import com.example.todolistproject.model.Task
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class TaskRepository(application: Application) {
+@Singleton
+class TaskRepository @Inject constructor(application: Application) {
 
     private var mTaskDatabase: TaskDatabase
     private var mTaskDao: TaskDao

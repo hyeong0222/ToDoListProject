@@ -11,14 +11,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TaskViewModel @Inject constructor(application: Application) : AndroidViewModel(application) {
+class TaskViewModel @Inject constructor(
+    application: Application,
     private val mTaskRepository: TaskRepository
-    private var mTaskList: LiveData<List<Task>>
+) : AndroidViewModel(application) {
 
-    init {
-        mTaskRepository = TaskRepository(application)
-        mTaskList = mTaskRepository.getTaskList()
-    }
+    private var mTaskList: LiveData<List<Task>> = mTaskRepository.getTaskList()
 
     fun insertTask(task: Task) {
         viewModelScope.launch {
