@@ -10,6 +10,9 @@ data class Task(
     @PrimaryKey(autoGenerate = true)
     var id: Long?,
 
+    @ColumnInfo(name = "isCompleted")
+    var isCompleted: Boolean? = false,
+
     @ColumnInfo(name = "title")
     var title: String,
 
@@ -19,5 +22,5 @@ data class Task(
     @ColumnInfo(name = "date")
     var date: Long,
 ) {
-    constructor(): this(null, "", "" , -1)
+    constructor(): this(null, false, "", "" , -1)
 }

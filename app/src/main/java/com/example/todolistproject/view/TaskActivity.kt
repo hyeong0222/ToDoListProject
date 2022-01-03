@@ -46,6 +46,10 @@ class TaskActivity : AppCompatActivity() {
                 override fun onTaskItemLongClick(position: Int) {
                     openDeleteTaskDialog(getItem(position))
                 }
+
+                override fun onTaskCompleteClick(position: Int) {
+                    setTaskCompleted(getItem(position))
+                }
             }
         }
 
@@ -119,5 +123,12 @@ class TaskActivity : AppCompatActivity() {
                 mViewModel.deleteTask(task)
             }.setNegativeButton("No", null).create()
         dialog.show()
+    }
+
+    private fun setTaskCompleted(task: Task) {
+        val isCompleted = task.isCompleted == true
+        task.isCompleted = !isCompleted
+
+        mViewModel.updateTask(task)
     }
 }
