@@ -22,6 +22,7 @@ class TaskAdapter @Inject constructor() : ListAdapter<Task, TaskViewHolder>(diff
     interface OnTaskItemClickListener {
         fun onTaskItemClick(position: Int)
         fun onTaskItemLongClick(position: Int)
+        fun onTaskCompleteClick(position: Int)
     }
 
     var listener: OnTaskItemClickListener? = null
@@ -68,6 +69,10 @@ class TaskViewHolder(
         itemView.setOnLongClickListener {
             listener?.onTaskItemLongClick(bindingAdapterPosition)
             return@setOnLongClickListener true
+        }
+
+        binding.checkbox.setOnClickListener {
+            listener?.onTaskCompleteClick(bindingAdapterPosition)
         }
     }
 
