@@ -81,8 +81,8 @@ class TaskActivity : AppCompatActivity() {
     }
 
     private fun addTask(dialogViewBinding: DialogAddTaskBinding) {
-        val title = dialogViewBinding.etTaskTitle.text.toString()
-        val description = dialogViewBinding.etTaskDescription.text.toString()
+        val title = dialogViewBinding.taskTitleEditText.text.toString()
+        val description = dialogViewBinding.taskDescriptionEditText.text.toString()
         val date = Date().time
 
         val task =
@@ -110,8 +110,8 @@ class TaskActivity : AppCompatActivity() {
         // We must deep copy the task object in order for the DiffUtil to recognize and compare the
         // new object with the old one.
         val modifiedTask = task.copy()
-        modifiedTask.title = dialogViewBinding.etTaskTitle.text.toString()
-        modifiedTask.description = dialogViewBinding.etTaskDescription.text.toString()
+        modifiedTask.title = dialogViewBinding.taskTitleEditText.text.toString()
+        modifiedTask.description = dialogViewBinding.taskDescriptionEditText.text.toString()
         modifiedTask.date = Date().time
 
         mViewModel.updateTask(modifiedTask)
