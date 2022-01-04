@@ -1,7 +1,9 @@
 package com.example.todolistproject.view
 
+import android.app.DatePickerDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AlertDialog
@@ -14,7 +16,9 @@ import com.example.todolistproject.databinding.DialogAddTaskBinding
 import com.example.todolistproject.model.Task
 import com.example.todolistproject.view.adapter.TaskAdapter
 import com.example.todolistproject.viewmodel.TaskViewModel
+import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -77,16 +81,33 @@ class TaskActivity : AppCompatActivity() {
                 }
                 .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
                 .create()
+
+        dialogViewBinding.startDateEditText.inputType = InputType.TYPE_NULL
+        dialogViewBinding.startDateEditText.setOnClickListener {
+            openDatePickerDialog(dialogViewBinding.startDateEditText)
+        }
+        dialogViewBinding.endDateEditText.inputType = InputType.TYPE_NULL
+        dialogViewBinding.endDateEditText.setOnClickListener {
+            openDatePickerDialog(dialogViewBinding.endDateEditText)
+        }
         dialog.show()
     }
 
     private fun addTask(dialogViewBinding: DialogAddTaskBinding) {
         val title = dialogViewBinding.taskTitleEditText.text.toString()
         val description = dialogViewBinding.taskDescriptionEditText.text.toString()
-        val date = Date().time
+        val startDate = dialogViewBinding.startDateEditText.text.toString()
+        val endDate = dialogViewBinding.endDateEditText.text.toString()
 
         val task =
-            Task(id = null, title = title, description = description, date = date)
+            Task(
+                id = null,
+                isCompleted = false,
+                title = title,
+                description = description,
+                startDate = startDate,
+                endDate = endDate
+            )
         mViewModel.insertTask(task)
     }
 
@@ -112,7 +133,8 @@ class TaskActivity : AppCompatActivity() {
         val modifiedTask = task.copy()
         modifiedTask.title = dialogViewBinding.taskTitleEditText.text.toString()
         modifiedTask.description = dialogViewBinding.taskDescriptionEditText.text.toString()
-        modifiedTask.date = Date().time
+        modifiedTask.startDate = dialogViewBinding.startDateEditText.text.toString()
+        modifiedTask.endDate = dialogViewBinding.endDateEditText.text.toString()
 
         mViewModel.updateTask(modifiedTask)
     }
@@ -130,5 +152,29 @@ class TaskActivity : AppCompatActivity() {
         task.isCompleted = !isCompleted
 
         mViewModel.updateTask(task)
+    }
+
+    private fun openDatePickerDialog(editText: TextInputEditText) {
+        val calendar = Calendar.getInstance()
+        val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
+            val date = Calendar.getInstance()
+            date.set(Calendar.YEAR, year)
+            date.set(Calendar.MONTH, month)
+            date.set(Calendar.DAY_OF_YEAR, day)
+            setDateText(editText, date)
+        }
+
+        DatePickerDialog(
+            this,
+            dateSetListener,
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        ).show()
+    }
+
+    private fun setDateText(editText: TextInputEditText, date: Calendar) {
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        editText.setText(sdf.format(date.time))
     }
 }

@@ -2,8 +2,6 @@ package com.example.todolistproject.view.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -11,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistproject.R
 import com.example.todolistproject.databinding.ItemTaskBinding
 import com.example.todolistproject.model.Task
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -80,10 +77,4 @@ class TaskViewHolder(
         binding.task = task
         binding.executePendingBindings()
     }
-}
-
-@BindingAdapter("taskDate")
-fun setTaskDate(tv: TextView, date: Long) {
-    val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
-    tv.text = sdf.format(date)
 }
