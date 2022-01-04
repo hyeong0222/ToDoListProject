@@ -7,7 +7,7 @@ import com.example.todolistproject.model.Task
 @Dao
 interface TaskDao {
 
-    @Query("SELECT * FROM Task ORDER BY date ASC")
+    @Query("SELECT * FROM Task ORDER BY endDate ASC")
     fun getTaskList(): LiveData<List<Task>>
 
     @Insert

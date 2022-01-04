@@ -19,8 +19,11 @@ data class Task(
     @ColumnInfo(name = "description")
     var description: String? = "",
 
-    @ColumnInfo(name = "date")
-    var date: Long,
+    @ColumnInfo(name = "startDate")
+    var startDate: String?,
+
+    @ColumnInfo(name = "endDate")
+    var endDate: String?,
 ) {
-    constructor(): this(null, false, "", "" , -1)
+    constructor(): this(null, false, "", "", "", "")
 }
