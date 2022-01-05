@@ -74,12 +74,13 @@ class TaskActivity : AppCompatActivity() {
         val dialogViewBinding = DialogAddTaskBinding.inflate(LayoutInflater.from(this))
 
         val dialog =
-            AlertDialog.Builder(this).setTitle("Add task").setView(dialogViewBinding.root)
-                .setPositiveButton("Add") { dialog, _ ->
+            AlertDialog.Builder(this).setTitle(getString(R.string.todo_add_task))
+                .setView(dialogViewBinding.root)
+                .setPositiveButton(getString(R.string.todo_add)) { dialog, _ ->
                     addTask(dialogViewBinding)
                     dialog.dismiss()
                 }
-                .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+                .setNegativeButton(getString(R.string.todo_cancel)) { dialog, _ -> dialog.dismiss() }
                 .create()
 
         dialogViewBinding.startDateEditText.inputType = InputType.TYPE_NULL
@@ -115,12 +116,13 @@ class TaskActivity : AppCompatActivity() {
         val dialogViewBinding = DialogAddTaskBinding.inflate(LayoutInflater.from(this))
         dialogViewBinding.task = task
 
-        val dialog = AlertDialog.Builder(this).setTitle("Edit Task").setView(dialogViewBinding.root)
-            .setPositiveButton("Okay") { dialog, _ ->
+        val dialog = AlertDialog.Builder(this).setTitle(getString(R.string.todo_edit_task))
+            .setView(dialogViewBinding.root)
+            .setPositiveButton(getString(R.string.todo_okay)) { dialog, _ ->
                 modifyTask(dialogViewBinding, task)
                 dialog.dismiss()
             }
-            .setNegativeButton("Cancel") { dialog, _ ->
+            .setNegativeButton(getString(R.string.todo_cancel)) { dialog, _ ->
                 dialog.dismiss()
             }
             .create()
@@ -140,10 +142,11 @@ class TaskActivity : AppCompatActivity() {
     }
 
     private fun openDeleteTaskDialog(task: Task) {
-        val dialog = AlertDialog.Builder(this).setTitle("Delete Task")
-            .setMessage("Do you want to remove this task?").setPositiveButton("Yes") { _, _ ->
+        val dialog = AlertDialog.Builder(this).setTitle(getString(R.string.todo_delete_task))
+            .setMessage(getString(R.string.todo_delete_task_confirmation))
+            .setPositiveButton(getString(R.string.todo_yes)) { _, _ ->
                 mViewModel.deleteTask(task)
-            }.setNegativeButton("No", null).create()
+            }.setNegativeButton(getString(R.string.todo_no), null).create()
         dialog.show()
     }
 
