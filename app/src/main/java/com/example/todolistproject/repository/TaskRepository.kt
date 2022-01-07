@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import com.example.todolistproject.database.TaskDatabase
 import com.example.todolistproject.database.dao.TaskDao
 import com.example.todolistproject.model.Task
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -17,13 +16,11 @@ class TaskRepository @Inject constructor(application: Application) {
     private var mTaskDatabase: TaskDatabase
     private var mTaskDao: TaskDao
     private var mTask: LiveData<List<Task>>
-    private var compositeDisposable: CompositeDisposable
 
     init {
         mTaskDatabase = TaskDatabase.getInstance(application)
         mTaskDao = mTaskDatabase.taskDao()
         mTask = mTaskDao.getTaskList()
-        compositeDisposable = CompositeDisposable()
     }
 
     fun getTaskList(): LiveData<List<Task>> {

@@ -11,9 +11,7 @@ import com.example.todolistproject.databinding.ItemTaskBinding
 import com.example.todolistproject.model.Task
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class TaskAdapter @Inject constructor() : ListAdapter<Task, TaskViewHolder>(diffUtil) {
 
     interface OnTaskItemClickListener {
