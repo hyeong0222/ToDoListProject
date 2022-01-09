@@ -27,8 +27,7 @@ class TaskActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    @Inject
-    lateinit var mAdapter: TaskAdapter
+    @Inject lateinit var mAdapter: TaskAdapter
     private val mViewModel by viewModels<TaskViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {

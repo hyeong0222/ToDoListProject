@@ -1,8 +1,7 @@
 package com.example.todolistproject.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todolistproject.model.Task
 import com.example.todolistproject.repository.TaskRepository
@@ -11,10 +10,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TaskViewModel @Inject constructor(
-    application: Application,
-    private val mTaskRepository: TaskRepository
-) : AndroidViewModel(application) {
+class TaskViewModel @Inject constructor(private val mTaskRepository: TaskRepository) : ViewModel() {
 
     private var mTaskList: LiveData<List<Task>> = mTaskRepository.getTaskList()
 
