@@ -1,8 +1,6 @@
 package com.example.todolistproject.repository
 
-import android.app.Application
 import androidx.lifecycle.LiveData
-import com.example.todolistproject.database.TaskDatabase
 import com.example.todolistproject.database.dao.TaskDao
 import com.example.todolistproject.model.Task
 import kotlinx.coroutines.Dispatchers
@@ -11,20 +9,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class TaskRepository @Inject constructor(application: Application) {
-
-    private var mTaskDatabase: TaskDatabase
-    private var mTaskDao: TaskDao
-    private var mTask: LiveData<List<Task>>
-
-    init {
-        mTaskDatabase = TaskDatabase.getInstance(application)
-        mTaskDao = mTaskDatabase.taskDao()
-        mTask = mTaskDao.getTaskList()
-    }
+class TaskRepository @Inject constructor(private val mTaskDao: TaskDao) {
 
     fun getTaskList(): LiveData<List<Task>> {
-        return mTask
+        return mTaskDao.getTaskList()
     }
 
     suspend fun insertTask(task: Task) {
