@@ -1,6 +1,7 @@
 package com.example.todolistproject.view
 
 import android.app.DatePickerDialog
+import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
@@ -16,6 +17,7 @@ import com.example.todolistproject.databinding.DialogAddTaskBinding
 import com.example.todolistproject.model.Task
 import com.example.todolistproject.view.adapter.TaskAdapter
 import com.example.todolistproject.viewmodel.TaskViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
@@ -29,6 +31,7 @@ class TaskActivity : AppCompatActivity() {
 
     @Inject lateinit var mAdapter: TaskAdapter
     private val mViewModel by viewModels<TaskViewModel>()
+    private var currentFilter = TASK
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -178,5 +181,44 @@ class TaskActivity : AppCompatActivity() {
     private fun setDateText(editText: TextInputEditText, date: Calendar) {
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
         editText.setText(sdf.format(date.time))
+    }
+
+    fun openListFilter() {
+        val items = arrayOf(TASK, COMPLETED)
+        val checkedItem = 0
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Filter")
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton("OK") { dialog, index ->
+                binding.rvTodoList.visibility = View.GONE
+                binding.progressIndicator.visibility = View.VISIBLE
+                setFilteredList()
+                dialog.dismiss()
+            }
+            .setSingleChoiceItems(items, checkedItem) { dialog, index ->
+                currentFilter = items[index]
+            }
+            .show()
+    }
+
+    private fun setFilteredList() {
+        if (currentFilter == TASK) {
+            mViewModel.getTaskList().observe(this, {
+                mAdapter.setTaskItems(it)
+            })
+        } else if (currentFilter == COMPLETED) {
+            mViewModel.getCompletedTaskList().observe(this, {
+                mAdapter.setTaskItems(it)
+            })
+        }
+        binding.progressIndicator.visibility = View.GONE
+        binding.rvTodoList.visibility = View.VISIBLE
+    }
+
+    companion object {
+        const val TASK = "Tasks"
+        const val COMPLETED = "Completed"
     }
 }

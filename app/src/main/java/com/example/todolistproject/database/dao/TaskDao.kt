@@ -10,6 +10,9 @@ interface TaskDao {
     @Query("SELECT * FROM Task ORDER BY endDate ASC")
     fun getTaskList(): LiveData<List<Task>>
 
+    @Query("SELECT * FROM Task WHERE isCompleted = 1 ORDER BY endDate ASC ")
+    fun getCompletedTaskList(): LiveData<List<Task>>
+
     @Insert
     suspend fun insertTask(task: Task)
 
