@@ -13,6 +13,7 @@ import javax.inject.Inject
 class TaskViewModel @Inject constructor(private val mTaskRepository: TaskRepository) : ViewModel() {
 
     private var mTaskList: LiveData<List<Task>> = mTaskRepository.getTaskList()
+    private var mIncompleteTaskList: LiveData<List<Task>> = mTaskRepository.getIncompleteTaskList()
     private var mCompletedTaskList: LiveData<List<Task>> = mTaskRepository.getCompletedTaskList()
 
     fun insertTask(task: Task) {
@@ -22,6 +23,8 @@ class TaskViewModel @Inject constructor(private val mTaskRepository: TaskReposit
     }
 
     fun getTaskList(): LiveData<List<Task>> = mTaskList
+
+    fun getIncompleteTaskList(): LiveData<List<Task>> = mIncompleteTaskList
 
     fun getCompletedTaskList(): LiveData<List<Task>> = mCompletedTaskList
 
