@@ -15,6 +15,10 @@ class TaskRepository @Inject constructor(private val mTaskDao: TaskDao) {
         return mTaskDao.getTaskList()
     }
 
+    fun getIncompleteTaskList(): LiveData<List<Task>> {
+        return mTaskDao.getIncompleteTaskList()
+    }
+
     fun getCompletedTaskList(): LiveData<List<Task>> {
         return mTaskDao.getCompletedTaskList()
     }

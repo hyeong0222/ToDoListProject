@@ -184,34 +184,42 @@ class TaskActivity : AppCompatActivity() {
     }
 
     fun openListFilter() {
-        val items = arrayOf(TASK, COMPLETED)
-        val checkedItem = 0
+        val items = arrayOf(TASK, INCOMPLETE, COMPLETED)
+        val checkedItem = items.indexOf(currentFilter)
         MaterialAlertDialogBuilder(this)
             .setTitle("Filter")
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("OK") { dialog, index ->
+            .setPositiveButton("OK") { dialog, _ ->
                 binding.rvTodoList.visibility = View.GONE
                 binding.progressIndicator.visibility = View.VISIBLE
                 setFilteredList()
                 dialog.dismiss()
             }
-            .setSingleChoiceItems(items, checkedItem) { dialog, index ->
+            .setSingleChoiceItems(items, checkedItem) { _, index ->
                 currentFilter = items[index]
             }
             .show()
     }
 
     private fun setFilteredList() {
-        if (currentFilter == TASK) {
-            mViewModel.getTaskList().observe(this, {
-                mAdapter.setTaskItems(it)
-            })
-        } else if (currentFilter == COMPLETED) {
-            mViewModel.getCompletedTaskList().observe(this, {
-                mAdapter.setTaskItems(it)
-            })
+        when (currentFilter) {
+            TASK -> {
+                mViewModel.getTaskList().observe(this, {
+                    mAdapter.setTaskItems(it)
+                })
+            }
+            INCOMPLETE -> {
+                mViewModel.getIncompleteTaskList().observe(this, {
+                    mAdapter.setTaskItems(it)
+                })
+            }
+            COMPLETED -> {
+                mViewModel.getCompletedTaskList().observe(this, {
+                    mAdapter.setTaskItems(it)
+                })
+            }
         }
         binding.progressIndicator.visibility = View.GONE
         binding.rvTodoList.visibility = View.VISIBLE
@@ -219,6 +227,7 @@ class TaskActivity : AppCompatActivity() {
 
     companion object {
         const val TASK = "Tasks"
+        const val INCOMPLETE = "Incomplete"
         const val COMPLETED = "Completed"
     }
 }
