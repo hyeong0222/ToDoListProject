@@ -1,7 +1,6 @@
 package com.example.todolistproject.view
 
 import android.app.DatePickerDialog
-import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
@@ -29,8 +28,8 @@ class TaskActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    @Inject lateinit var mAdapter: TaskAdapter
-    private val mViewModel by viewModels<TaskViewModel>()
+    @Inject lateinit var taskAdapter: TaskAdapter
+    private val taskViewModel by viewModels<TaskViewModel>()
     private var currentFilter = TASK
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +42,7 @@ class TaskActivity : AppCompatActivity() {
     }
 
     private fun initRecyclerView() {
-        mAdapter?.apply {
+        taskAdapter?.apply {
             listener = object : TaskAdapter.OnTaskItemClickListener {
                 override fun onTaskItemClick(position: Int) {
                     openModifyTaskDialog(getItem(position))
@@ -61,13 +60,13 @@ class TaskActivity : AppCompatActivity() {
 
         binding.rvTodoList.run {
             layoutManager = LinearLayoutManager(this@TaskActivity)
-            adapter = mAdapter
+            adapter = taskAdapter
         }
     }
 
     private fun observeViewModel() {
-        mViewModel.getTaskList().observe(this, {
-            mAdapter.setTaskItems(it)
+        taskViewModel.getTaskList().observe(this, {
+            taskAdapter.setTaskItems(it)
             showTaskList(true)
         })
     }
@@ -111,7 +110,7 @@ class TaskActivity : AppCompatActivity() {
                 startDate = startDate,
                 endDate = endDate
             )
-        mViewModel.insertTask(task)
+        taskViewModel.insertTask(task)
     }
 
     private fun openModifyTaskDialog(task: Task) {
@@ -140,14 +139,14 @@ class TaskActivity : AppCompatActivity() {
         modifiedTask.startDate = dialogViewBinding.startDateEditText.text.toString()
         modifiedTask.endDate = dialogViewBinding.endDateEditText.text.toString()
 
-        mViewModel.updateTask(modifiedTask)
+        taskViewModel.updateTask(modifiedTask)
     }
 
     private fun openDeleteTaskDialog(task: Task) {
         val dialog = AlertDialog.Builder(this).setTitle(getString(R.string.todo_delete_task))
             .setMessage(getString(R.string.todo_delete_task_confirmation))
             .setPositiveButton(getString(R.string.todo_yes)) { _, _ ->
-                mViewModel.deleteTask(task)
+                taskViewModel.deleteTask(task)
             }.setNegativeButton(getString(R.string.todo_no), null).create()
         dialog.show()
     }
@@ -156,7 +155,7 @@ class TaskActivity : AppCompatActivity() {
         val isCompleted = task.isCompleted == true
         task.isCompleted = !isCompleted
 
-        mViewModel.updateTask(task)
+        taskViewModel.updateTask(task)
     }
 
     private fun openDatePickerDialog(editText: TextInputEditText) {
@@ -207,18 +206,18 @@ class TaskActivity : AppCompatActivity() {
     private fun setFilteredList() {
         when (currentFilter) {
             TASK -> {
-                mViewModel.getTaskList().observe(this, {
-                    mAdapter.setTaskItems(it)
+                taskViewModel.getTaskList().observe(this, {
+                    taskAdapter.setTaskItems(it)
                 })
             }
             INCOMPLETE -> {
-                mViewModel.getIncompleteTaskList().observe(this, {
-                    mAdapter.setTaskItems(it)
+                taskViewModel.getIncompleteTaskList().observe(this, {
+                    taskAdapter.setTaskItems(it)
                 })
             }
             COMPLETED -> {
-                mViewModel.getCompletedTaskList().observe(this, {
-                    mAdapter.setTaskItems(it)
+                taskViewModel.getCompletedTaskList().observe(this, {
+                    taskAdapter.setTaskItems(it)
                 })
             }
         }
