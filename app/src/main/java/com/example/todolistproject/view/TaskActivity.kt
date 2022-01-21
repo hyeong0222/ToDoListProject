@@ -67,8 +67,8 @@ class TaskActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
         mViewModel.getTaskList().observe(this, {
-            binding.progressIndicator.visibility = View.GONE
             mAdapter.setTaskItems(it)
+            showTaskList(true)
         })
     }
 
@@ -186,19 +186,20 @@ class TaskActivity : AppCompatActivity() {
     fun openListFilter() {
         val items = arrayOf(TASK, INCOMPLETE, COMPLETED)
         val checkedItem = items.indexOf(currentFilter)
+        var tempFilter = currentFilter
         MaterialAlertDialogBuilder(this)
             .setTitle("Filter")
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
             }
             .setPositiveButton("OK") { dialog, _ ->
-                binding.rvTodoList.visibility = View.GONE
-                binding.progressIndicator.visibility = View.VISIBLE
+                currentFilter = tempFilter
+                showTaskList(false)
                 setFilteredList()
                 dialog.dismiss()
             }
             .setSingleChoiceItems(items, checkedItem) { _, index ->
-                currentFilter = items[index]
+                tempFilter = items[index]
             }
             .show()
     }
@@ -221,8 +222,17 @@ class TaskActivity : AppCompatActivity() {
                 })
             }
         }
-        binding.progressIndicator.visibility = View.GONE
-        binding.rvTodoList.visibility = View.VISIBLE
+        showTaskList(true)
+    }
+
+    private fun showTaskList(visible: Boolean) {
+        if (visible) {
+            binding.progressIndicator.visibility = View.GONE
+            binding.rvTodoList.visibility = View.VISIBLE
+        } else {
+            binding.rvTodoList.visibility = View.GONE
+            binding.progressIndicator.visibility = View.VISIBLE
+        }
     }
 
     companion object {
