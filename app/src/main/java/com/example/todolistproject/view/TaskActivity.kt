@@ -188,11 +188,11 @@ class TaskActivity : AppCompatActivity() {
         val checkedItem = items.indexOf(currentFilter)
         var tempFilter = currentFilter
         MaterialAlertDialogBuilder(this)
-            .setTitle("Filter")
-            .setNegativeButton("Cancel") { dialog, _ ->
+            .setTitle(R.string.todo_filter)
+            .setNegativeButton(R.string.todo_cancel) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("OK") { dialog, _ ->
+            .setPositiveButton(R.string.todo_okay) { dialog, _ ->
                 currentFilter = tempFilter
                 showTaskList(false)
                 setFilteredList()
