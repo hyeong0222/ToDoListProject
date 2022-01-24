@@ -24,6 +24,4 @@ data class Task(
 
     @ColumnInfo(name = "endDate")
     var endDate: String?,
-) {
-    constructor(): this(null, false, "", "", "", "")
-}
+)

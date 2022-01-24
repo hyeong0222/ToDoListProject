@@ -9,6 +9,8 @@ import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.activity.viewModels
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todolistproject.R
 import com.example.todolistproject.databinding.ActivityMainBinding
@@ -58,17 +60,17 @@ class TaskActivity : AppCompatActivity() {
             }
         }
 
-        binding.rvTodoList.run {
+        binding.rvTodoList.apply {
             layoutManager = LinearLayoutManager(this@TaskActivity)
             adapter = taskAdapter
         }
     }
 
     private fun observeViewModel() {
-        taskViewModel.getTaskList().observe(this, {
+        taskViewModel.getTaskList().observe(this) {
             taskAdapter.setTaskItems(it)
             showTaskList(true)
-        })
+        }
     }
 
     fun openAddTaskDialog() {
@@ -77,11 +79,10 @@ class TaskActivity : AppCompatActivity() {
         val dialog =
             AlertDialog.Builder(this).setTitle(getString(R.string.todo_add_task))
                 .setView(dialogViewBinding.root)
-                .setPositiveButton(getString(R.string.todo_add)) { dialog, _ ->
+                .setPositiveButton(getString(R.string.todo_add)) { _, _ ->
                     addTask(dialogViewBinding)
-                    dialog.dismiss()
                 }
-                .setNegativeButton(getString(R.string.todo_cancel)) { dialog, _ -> dialog.dismiss() }
+                .setNegativeButton(getString(R.string.todo_cancel), null)
                 .create()
 
         dialogViewBinding.startDateEditText.inputType = InputType.TYPE_NULL
@@ -119,13 +120,10 @@ class TaskActivity : AppCompatActivity() {
 
         val dialog = AlertDialog.Builder(this).setTitle(getString(R.string.todo_edit_task))
             .setView(dialogViewBinding.root)
-            .setPositiveButton(getString(R.string.todo_okay)) { dialog, _ ->
+            .setPositiveButton(getString(R.string.todo_okay)) { _, _ ->
                 modifyTask(dialogViewBinding, task)
-                dialog.dismiss()
             }
-            .setNegativeButton(getString(R.string.todo_cancel)) { dialog, _ ->
-                dialog.dismiss()
-            }
+            .setNegativeButton(getString(R.string.todo_cancel), null)
             .create()
         dialog.show()
     }
@@ -134,10 +132,12 @@ class TaskActivity : AppCompatActivity() {
         // We must deep copy the task object in order for the DiffUtil to recognize and compare the
         // new object with the old one.
         val modifiedTask = task.copy()
-        modifiedTask.title = dialogViewBinding.taskTitleEditText.text.toString()
-        modifiedTask.description = dialogViewBinding.taskDescriptionEditText.text.toString()
-        modifiedTask.startDate = dialogViewBinding.startDateEditText.text.toString()
-        modifiedTask.endDate = dialogViewBinding.endDateEditText.text.toString()
+        modifiedTask.apply {
+            title = dialogViewBinding.taskTitleEditText.text.toString()
+            description = dialogViewBinding.taskDescriptionEditText.text.toString()
+            startDate = dialogViewBinding.startDateEditText.text.toString()
+            endDate = dialogViewBinding.endDateEditText.text.toString()
+        }
 
         taskViewModel.updateTask(modifiedTask)
     }
@@ -188,14 +188,11 @@ class TaskActivity : AppCompatActivity() {
         var tempFilter = currentFilter
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.todo_filter)
-            .setNegativeButton(R.string.todo_cancel) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .setPositiveButton(R.string.todo_okay) { dialog, _ ->
+            .setNegativeButton(R.string.todo_cancel, null)
+            .setPositiveButton(R.string.todo_okay) { _, _ ->
                 currentFilter = tempFilter
                 showTaskList(false)
                 setFilteredList()
-                dialog.dismiss()
             }
             .setSingleChoiceItems(items, checkedItem) { _, index ->
                 tempFilter = items[index]
@@ -206,32 +203,27 @@ class TaskActivity : AppCompatActivity() {
     private fun setFilteredList() {
         when (currentFilter) {
             TASK -> {
-                taskViewModel.getTaskList().observe(this, {
+                taskViewModel.getTaskList().observe(this) {
                     taskAdapter.setTaskItems(it)
-                })
+                }
             }
             INCOMPLETE -> {
-                taskViewModel.getIncompleteTaskList().observe(this, {
+                taskViewModel.getIncompleteTaskList().observe(this) {
                     taskAdapter.setTaskItems(it)
-                })
+                }
             }
             COMPLETED -> {
-                taskViewModel.getCompletedTaskList().observe(this, {
+                taskViewModel.getCompletedTaskList().observe(this) {
                     taskAdapter.setTaskItems(it)
-                })
+                }
             }
         }
         showTaskList(true)
     }
 
     private fun showTaskList(visible: Boolean) {
-        if (visible) {
-            binding.progressIndicator.visibility = View.GONE
-            binding.rvTodoList.visibility = View.VISIBLE
-        } else {
-            binding.rvTodoList.visibility = View.GONE
-            binding.progressIndicator.visibility = View.VISIBLE
-        }
+        binding.progressIndicator.isGone = visible
+        binding.rvTodoList.isVisible = visible
     }
 
     companion object {

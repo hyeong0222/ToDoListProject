@@ -42,11 +42,11 @@ class TaskAdapter @Inject constructor() : ListAdapter<Task, TaskViewHolder>(diff
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<Task>() {
             override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
-                return oldItem == newItem
+                return oldItem.id == newItem.id
             }
 
             override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
-                return oldItem.id == newItem.id
+                return oldItem == newItem
             }
 
         }
@@ -63,7 +63,7 @@ class TaskViewHolder(
 
         itemView.setOnLongClickListener {
             listener?.onTaskItemLongClick(bindingAdapterPosition)
-            return@setOnLongClickListener true
+            true
         }
 
         binding.checkbox.setOnClickListener {
