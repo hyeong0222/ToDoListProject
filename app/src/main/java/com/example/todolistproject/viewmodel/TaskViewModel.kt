@@ -1,42 +1,67 @@
 package com.example.todolistproject.viewmodel
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todolistproject.model.Task
 import com.example.todolistproject.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class TaskViewModel @Inject constructor(private val mTaskRepository: TaskRepository) : ViewModel() {
 
-    private var mTaskList: LiveData<List<Task>> = mTaskRepository.getTaskList()
-    private var mIncompleteTaskList: LiveData<List<Task>> = mTaskRepository.getIncompleteTaskList()
-    private var mCompletedTaskList: LiveData<List<Task>> = mTaskRepository.getCompletedTaskList()
+    private val _taskList = MutableLiveData<List<Task>>()
+    private val _incompleteTaskList = MutableLiveData<List<Task>>()
+    private val _completedTaskList = MutableLiveData<List<Task>>()
+
+    val taskList: LiveData<List<Task>> = _taskList
+    val incompleteTaskList: LiveData<List<Task>> = _incompleteTaskList
+    val completedTaskList: LiveData<List<Task>> = _completedTaskList
+
+    init {
+        getTaskList()
+        getIncompleteTaskList()
+        getCompletedTaskList()
+    }
 
     fun insertTask(task: Task) {
         viewModelScope.launch {
-            mTaskRepository.insertTask(task)
+            withContext(Dispatchers.IO) { mTaskRepository.insertTask(task) }
         }
     }
 
-    fun getTaskList(): LiveData<List<Task>> = mTaskList
+    private fun getTaskList() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { _taskList.postValue(mTaskRepository.getTaskList()) }
+        }
+    }
 
-    fun getIncompleteTaskList(): LiveData<List<Task>> = mIncompleteTaskList
+    private fun getIncompleteTaskList() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { _incompleteTaskList.postValue(mTaskRepository.getIncompleteTaskList()) }
+        }
+    }
 
-    fun getCompletedTaskList(): LiveData<List<Task>> = mCompletedTaskList
+    private fun getCompletedTaskList() {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) { _completedTaskList.postValue(mTaskRepository.getCompletedTaskList()) }
+        }
+    }
 
     fun updateTask(task: Task) {
         viewModelScope.launch {
-            mTaskRepository.updateTask(task)
+            withContext(Dispatchers.IO) { mTaskRepository.updateTask(task) }
         }
     }
 
     fun deleteTask(task: Task) {
         viewModelScope.launch {
-            mTaskRepository.deleteTask(task)
+            withContext(Dispatchers.IO) { mTaskRepository.deleteTask(task) }
         }
     }
 }

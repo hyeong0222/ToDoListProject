@@ -67,7 +67,7 @@ class TaskActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        taskViewModel.getTaskList().observe(this) {
+        taskViewModel.taskList.observe(this) {
             taskAdapter.setTaskItems(it)
             showTaskList(true)
         }
@@ -203,17 +203,17 @@ class TaskActivity : AppCompatActivity() {
     private fun setFilteredList() {
         when (currentFilter) {
             TASK -> {
-                taskViewModel.getTaskList().observe(this) {
+                taskViewModel.taskList.observe(this) {
                     taskAdapter.setTaskItems(it)
                 }
             }
             INCOMPLETE -> {
-                taskViewModel.getIncompleteTaskList().observe(this) {
+                taskViewModel.incompleteTaskList.observe(this) {
                     taskAdapter.setTaskItems(it)
                 }
             }
             COMPLETED -> {
-                taskViewModel.getCompletedTaskList().observe(this) {
+                taskViewModel.completedTaskList.observe(this) {
                     taskAdapter.setTaskItems(it)
                 }
             }

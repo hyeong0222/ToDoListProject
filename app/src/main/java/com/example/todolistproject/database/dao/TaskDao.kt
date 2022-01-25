@@ -1,6 +1,5 @@
 package com.example.todolistproject.database.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.todolistproject.model.Task
 
@@ -8,13 +7,13 @@ import com.example.todolistproject.model.Task
 interface TaskDao {
 
     @Query("SELECT * FROM Task ORDER BY endDate ASC")
-    fun getTaskList(): LiveData<List<Task>>
+    fun getTaskList(): List<Task>
 
     @Query("SELECT * FROM Task WHERE isCompleted = 0 ORDER BY endDate ASC")
-    fun getIncompleteTaskList(): LiveData<List<Task>>
+    fun getIncompleteTaskList(): List<Task>
 
     @Query("SELECT * FROM Task WHERE isCompleted = 1 ORDER BY endDate ASC ")
-    fun getCompletedTaskList(): LiveData<List<Task>>
+    fun getCompletedTaskList(): List<Task>
 
     @Insert
     suspend fun insertTask(task: Task)
