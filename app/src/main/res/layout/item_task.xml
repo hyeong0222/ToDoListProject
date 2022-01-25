@@ -87,7 +87,8 @@
                 <CheckBox
                     android:id="@+id/checkbox"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:checked="@{task.isCompleted()}" />
 
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
