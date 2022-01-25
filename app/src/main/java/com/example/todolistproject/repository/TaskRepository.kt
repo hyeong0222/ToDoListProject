@@ -1,5 +1,6 @@
 package com.example.todolistproject.repository
 
+import androidx.lifecycle.LiveData
 import com.example.todolistproject.database.dao.TaskDao
 import com.example.todolistproject.model.Task
 import javax.inject.Inject
@@ -8,15 +9,15 @@ import javax.inject.Singleton
 @Singleton
 class TaskRepository @Inject constructor(private val mTaskDao: TaskDao) {
 
-    fun getTaskList(): List<Task> {
+    fun getTaskList(): LiveData<List<Task>> {
         return mTaskDao.getTaskList()
     }
 
-    fun getIncompleteTaskList(): List<Task> {
+    fun getIncompleteTaskList(): LiveData<List<Task>> {
         return mTaskDao.getIncompleteTaskList()
     }
 
-    fun getCompletedTaskList(): List<Task> {
+    fun getCompletedTaskList(): LiveData<List<Task>> {
         return mTaskDao.getCompletedTaskList()
     }
 

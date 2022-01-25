@@ -15,53 +15,29 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskViewModel @Inject constructor(private val mTaskRepository: TaskRepository) : ViewModel() {
 
-    private val _taskList = MutableLiveData<List<Task>>()
-    private val _incompleteTaskList = MutableLiveData<List<Task>>()
-    private val _completedTaskList = MutableLiveData<List<Task>>()
+    private val _taskList = mTaskRepository.getTaskList()
+    private val _incompleteTaskList = mTaskRepository.getIncompleteTaskList()
+    private val _completedTaskList = mTaskRepository.getCompletedTaskList()
 
     val taskList: LiveData<List<Task>> = _taskList
     val incompleteTaskList: LiveData<List<Task>> = _incompleteTaskList
     val completedTaskList: LiveData<List<Task>> = _completedTaskList
 
-    init {
-        getTaskList()
-        getIncompleteTaskList()
-        getCompletedTaskList()
-    }
-
     fun insertTask(task: Task) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { mTaskRepository.insertTask(task) }
-        }
-    }
-
-    private fun getTaskList() {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) { _taskList.postValue(mTaskRepository.getTaskList()) }
-        }
-    }
-
-    private fun getIncompleteTaskList() {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) { _incompleteTaskList.postValue(mTaskRepository.getIncompleteTaskList()) }
-        }
-    }
-
-    private fun getCompletedTaskList() {
-        viewModelScope.launch {
-            withContext(Dispatchers.IO) { _completedTaskList.postValue(mTaskRepository.getCompletedTaskList()) }
+            mTaskRepository.insertTask(task)
         }
     }
 
     fun updateTask(task: Task) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { mTaskRepository.updateTask(task) }
+            mTaskRepository.updateTask(task)
         }
     }
 
     fun deleteTask(task: Task) {
         viewModelScope.launch {
-            withContext(Dispatchers.IO) { mTaskRepository.deleteTask(task) }
+            mTaskRepository.deleteTask(task)
         }
     }
 }
