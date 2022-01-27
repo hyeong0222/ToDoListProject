@@ -5,13 +5,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
 import android.view.LayoutInflater
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.activity.viewModels
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todolistproject.R
 import com.example.todolistproject.databinding.ActivityMainBinding
 import com.example.todolistproject.databinding.DialogAddTaskBinding
@@ -38,31 +36,25 @@ class TaskActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.activity = this@TaskActivity
+        binding.adapter = taskAdapter
 
-        initRecyclerView()
+        setListeners()
         observeViewModel()
     }
 
-    private fun initRecyclerView() {
-        taskAdapter?.apply {
-            listener = object : TaskAdapter.OnTaskItemClickListener {
-                override fun onTaskItemClick(position: Int) {
-                    openModifyTaskDialog(getItem(position))
-                }
-
-                override fun onTaskItemLongClick(position: Int) {
-                    openDeleteTaskDialog(getItem(position))
-                }
-
-                override fun onTaskCompleteClick(position: Int) {
-                    setTaskCompleted(getItem(position))
-                }
+    private fun setListeners() {
+        taskAdapter.listener = object : TaskAdapter.OnTaskItemClickListener {
+            override fun onTaskItemClick(position: Int) {
+                openModifyTaskDialog(taskAdapter.getItem(position))
             }
-        }
 
-        binding.rvTodoList.apply {
-            layoutManager = LinearLayoutManager(this@TaskActivity)
-            adapter = taskAdapter
+            override fun onTaskItemLongClick(position: Int) {
+                openDeleteTaskDialog(taskAdapter.getItem(position))
+            }
+
+            override fun onTaskCompleteClick(position: Int) {
+                setTaskCompleted(taskAdapter.getItem(position))
+            }
         }
     }
 
@@ -85,14 +77,16 @@ class TaskActivity : AppCompatActivity() {
                 .setNegativeButton(getString(R.string.todo_cancel), null)
                 .create()
 
-        dialogViewBinding.startDateEditText.inputType = InputType.TYPE_NULL
-        dialogViewBinding.startDateEditText.setOnClickListener {
-            openDatePickerDialog(dialogViewBinding.startDateEditText)
+        dialogViewBinding.startDateEditText.apply {
+            inputType = InputType.TYPE_NULL
+            setOnClickListener { openDatePickerDialog(dialogViewBinding.startDateEditText) }
         }
-        dialogViewBinding.endDateEditText.inputType = InputType.TYPE_NULL
-        dialogViewBinding.endDateEditText.setOnClickListener {
-            openDatePickerDialog(dialogViewBinding.endDateEditText)
+
+        dialogViewBinding.endDateEditText.apply {
+            inputType = InputType.TYPE_NULL
+            setOnClickListener { openDatePickerDialog(dialogViewBinding.endDateEditText) }
         }
+
         dialog.show()
     }
 
@@ -104,8 +98,6 @@ class TaskActivity : AppCompatActivity() {
 
         val task =
             Task(
-                id = null,
-                isCompleted = false,
                 title = title,
                 description = description,
                 startDate = startDate,
@@ -165,7 +157,7 @@ class TaskActivity : AppCompatActivity() {
             date.set(Calendar.YEAR, year)
             date.set(Calendar.MONTH, month)
             date.set(Calendar.DAY_OF_YEAR, day)
-            setDateText(editText, date)
+            editText.setText(date.convertBy("yyyy-MM-dd"))
         }
 
         DatePickerDialog(
@@ -177,9 +169,10 @@ class TaskActivity : AppCompatActivity() {
         ).show()
     }
 
-    private fun setDateText(editText: TextInputEditText, date: Calendar) {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        editText.setText(sdf.format(date.time))
+    private fun Calendar.convertBy(format: String): CharSequence {
+        val sdf = SimpleDateFormat(format, Locale.getDefault())
+        return sdf.format(time)
+
     }
 
     fun openListFilter() {

@@ -63,7 +63,7 @@ class TaskViewHolder(
 
         itemView.setOnLongClickListener {
             listener?.onTaskItemLongClick(bindingAdapterPosition)
-            true
+            return@setOnLongClickListener true
         }
 
         binding.checkbox.setOnClickListener {
