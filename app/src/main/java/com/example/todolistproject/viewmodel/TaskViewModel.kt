@@ -1,13 +1,11 @@
 package com.example.todolistproject.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.todolistproject.model.Task
 import com.example.todolistproject.repository.TaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -19,9 +17,9 @@ class TaskViewModel @Inject constructor(private val mTaskRepository: TaskReposit
     private val _incompleteTaskList = mTaskRepository.getIncompleteTaskList()
     private val _completedTaskList = mTaskRepository.getCompletedTaskList()
 
-    val taskList: LiveData<List<Task>> = _taskList
-    val incompleteTaskList: LiveData<List<Task>> = _incompleteTaskList
-    val completedTaskList: LiveData<List<Task>> = _completedTaskList
+    val taskList: LiveData<List<Task>> = _taskList.asLiveData()
+    val incompleteTaskList: LiveData<List<Task>> = _incompleteTaskList.asLiveData()
+    val completedTaskList: LiveData<List<Task>> = _completedTaskList.asLiveData()
 
     fun insertTask(task: Task) {
         viewModelScope.launch {

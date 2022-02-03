@@ -1,23 +1,23 @@
 package com.example.todolistproject.repository
 
-import androidx.lifecycle.LiveData
 import com.example.todolistproject.database.dao.TaskDao
 import com.example.todolistproject.model.Task
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class TaskRepository @Inject constructor(private val mTaskDao: TaskDao) {
 
-    fun getTaskList(): LiveData<List<Task>> {
+    fun getTaskList(): Flow<List<Task>> {
         return mTaskDao.getTaskList()
     }
 
-    fun getIncompleteTaskList(): LiveData<List<Task>> {
+    fun getIncompleteTaskList(): Flow<List<Task>> {
         return mTaskDao.getIncompleteTaskList()
     }
 
-    fun getCompletedTaskList(): LiveData<List<Task>> {
+    fun getCompletedTaskList(): Flow<List<Task>> {
         return mTaskDao.getCompletedTaskList()
     }
 
