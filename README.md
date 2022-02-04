@@ -10,4 +10,5 @@ In this app, you can currently add, modify, and delete a task. You can also mark
 - Hilt Dependency Injection
 - DataBinding
 - ~RxJava~
+- ThreeTen Android Backport (3rd party library for JSR-310 backport adaptation)
 
