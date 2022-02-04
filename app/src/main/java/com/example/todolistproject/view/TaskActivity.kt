@@ -18,7 +18,9 @@ import com.example.todolistproject.view.adapter.TaskAdapter
 import com.example.todolistproject.viewmodel.TaskViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
+import org.threeten.bp.LocalDate
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -34,6 +36,7 @@ class TaskActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidThreeTen.init(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.activity = this@TaskActivity
         binding.adapter = taskAdapter
@@ -151,28 +154,19 @@ class TaskActivity : AppCompatActivity() {
     }
 
     private fun openDatePickerDialog(editText: TextInputEditText) {
-        val calendar = Calendar.getInstance()
+        val currentDate = LocalDate.now()
         val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
-            val date = Calendar.getInstance()
-            date.set(Calendar.YEAR, year)
-            date.set(Calendar.MONTH, month)
-            date.set(Calendar.DAY_OF_YEAR, day)
-            editText.setText(date.convertBy("yyyy-MM-dd"))
+            val selectedDate = LocalDate.of(year, month, day)
+            editText.setText(selectedDate.toString())
         }
 
         DatePickerDialog(
             this,
             dateSetListener,
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            currentDate.year,
+            currentDate.monthValue,
+            currentDate.dayOfMonth,
         ).show()
-    }
-
-    private fun Calendar.convertBy(format: String): CharSequence {
-        val sdf = SimpleDateFormat(format, Locale.getDefault())
-        return sdf.format(time)
-
     }
 
     fun openListFilter() {
