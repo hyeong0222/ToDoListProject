@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistproject.R
 import com.example.todolistproject.databinding.ItemTaskBinding
 import com.example.todolistproject.model.Task
-import java.util.*
 import javax.inject.Inject
 
 class TaskAdapter @Inject constructor() : ListAdapter<Task, TaskViewHolder>(diffUtil) {

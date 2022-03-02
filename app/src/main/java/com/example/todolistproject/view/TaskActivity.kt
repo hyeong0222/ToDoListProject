@@ -21,8 +21,6 @@ import com.google.android.material.textfield.TextInputEditText
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
 import org.threeten.bp.LocalDate
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
