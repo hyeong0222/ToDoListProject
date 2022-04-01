@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todolistproject.R
 import com.example.todolistproject.databinding.ItemTaskBinding
 import com.example.todolistproject.model.Task
-import java.util.*
 import javax.inject.Inject
 
 class TaskAdapter @Inject constructor() : ListAdapter<Task, TaskViewHolder>(diffUtil) {
@@ -42,11 +41,11 @@ class TaskAdapter @Inject constructor() : ListAdapter<Task, TaskViewHolder>(diff
     companion object {
         val diffUtil = object : DiffUtil.ItemCallback<Task>() {
             override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
-                return oldItem == newItem
+                return oldItem.id == newItem.id
             }
 
             override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
-                return oldItem.id == newItem.id
+                return oldItem == newItem
             }
 
         }

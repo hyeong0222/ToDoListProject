@@ -70,4 +70,10 @@ dependencies {
     // Activity and Fragment
     implementation "androidx.activity:activity-ktx:$activity_fragment_version"
     implementation "androidx.fragment:fragment-ktx:$activity_fragment_version"
+
+    // LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$livedata_version"
+    
+    // ThreeTen Android Backport
+    implementation "com.jakewharton.threetenabp:threetenabp:$threeten_abp_version"
 }

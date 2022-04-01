@@ -1,16 +1,15 @@
 package com.example.todolistproject.view
 
 import android.app.DatePickerDialog
-import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.InputType
 import android.view.LayoutInflater
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.activity.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import com.example.todolistproject.R
 import com.example.todolistproject.databinding.ActivityMainBinding
 import com.example.todolistproject.databinding.DialogAddTaskBinding
@@ -19,9 +18,9 @@ import com.example.todolistproject.view.adapter.TaskAdapter
 import com.example.todolistproject.viewmodel.TaskViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
+import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.SimpleDateFormat
-import java.util.*
+import org.threeten.bp.LocalDate
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -29,47 +28,42 @@ class TaskActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
 
-    @Inject lateinit var mAdapter: TaskAdapter
-    private val mViewModel by viewModels<TaskViewModel>()
+    @Inject lateinit var taskAdapter: TaskAdapter
+    private val taskViewModel by viewModels<TaskViewModel>()
     private var currentFilter = TASK
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidThreeTen.init(this)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.activity = this@TaskActivity
+        binding.adapter = taskAdapter
 
-        initRecyclerView()
+        setListeners()
         observeViewModel()
     }
 
-    private fun initRecyclerView() {
-        mAdapter?.apply {
-            listener = object : TaskAdapter.OnTaskItemClickListener {
-                override fun onTaskItemClick(position: Int) {
-                    openModifyTaskDialog(getItem(position))
-                }
-
-                override fun onTaskItemLongClick(position: Int) {
-                    openDeleteTaskDialog(getItem(position))
-                }
-
-                override fun onTaskCompleteClick(position: Int) {
-                    setTaskCompleted(getItem(position))
-                }
+    private fun setListeners() {
+        taskAdapter.listener = object : TaskAdapter.OnTaskItemClickListener {
+            override fun onTaskItemClick(position: Int) {
+                openModifyTaskDialog(taskAdapter.getItem(position))
             }
-        }
 
-        binding.rvTodoList.run {
-            layoutManager = LinearLayoutManager(this@TaskActivity)
-            adapter = mAdapter
+            override fun onTaskItemLongClick(position: Int) {
+                openDeleteTaskDialog(taskAdapter.getItem(position))
+            }
+
+            override fun onTaskCompleteClick(position: Int) {
+                setTaskCompleted(taskAdapter.getItem(position))
+            }
         }
     }
 
     private fun observeViewModel() {
-        mViewModel.getTaskList().observe(this, {
-            mAdapter.setTaskItems(it)
+        taskViewModel.taskList.observe(this) {
+            taskAdapter.setTaskItems(it)
             showTaskList(true)
-        })
+        }
     }
 
     fun openAddTaskDialog() {
@@ -78,21 +72,22 @@ class TaskActivity : AppCompatActivity() {
         val dialog =
             AlertDialog.Builder(this).setTitle(getString(R.string.todo_add_task))
                 .setView(dialogViewBinding.root)
-                .setPositiveButton(getString(R.string.todo_add)) { dialog, _ ->
+                .setPositiveButton(getString(R.string.todo_add)) { _, _ ->
                     addTask(dialogViewBinding)
-                    dialog.dismiss()
                 }
-                .setNegativeButton(getString(R.string.todo_cancel)) { dialog, _ -> dialog.dismiss() }
+                .setNegativeButton(getString(R.string.todo_cancel), null)
                 .create()
 
-        dialogViewBinding.startDateEditText.inputType = InputType.TYPE_NULL
-        dialogViewBinding.startDateEditText.setOnClickListener {
-            openDatePickerDialog(dialogViewBinding.startDateEditText)
+        dialogViewBinding.startDateEditText.apply {
+            inputType = InputType.TYPE_NULL
+            setOnClickListener { openDatePickerDialog(dialogViewBinding.startDateEditText) }
         }
-        dialogViewBinding.endDateEditText.inputType = InputType.TYPE_NULL
-        dialogViewBinding.endDateEditText.setOnClickListener {
-            openDatePickerDialog(dialogViewBinding.endDateEditText)
+
+        dialogViewBinding.endDateEditText.apply {
+            inputType = InputType.TYPE_NULL
+            setOnClickListener { openDatePickerDialog(dialogViewBinding.endDateEditText) }
         }
+
         dialog.show()
     }
 
@@ -104,14 +99,12 @@ class TaskActivity : AppCompatActivity() {
 
         val task =
             Task(
-                id = null,
-                isCompleted = false,
                 title = title,
                 description = description,
                 startDate = startDate,
                 endDate = endDate
             )
-        mViewModel.insertTask(task)
+        taskViewModel.insertTask(task)
     }
 
     private fun openModifyTaskDialog(task: Task) {
@@ -120,13 +113,10 @@ class TaskActivity : AppCompatActivity() {
 
         val dialog = AlertDialog.Builder(this).setTitle(getString(R.string.todo_edit_task))
             .setView(dialogViewBinding.root)
-            .setPositiveButton(getString(R.string.todo_okay)) { dialog, _ ->
+            .setPositiveButton(getString(R.string.todo_okay)) { _, _ ->
                 modifyTask(dialogViewBinding, task)
-                dialog.dismiss()
             }
-            .setNegativeButton(getString(R.string.todo_cancel)) { dialog, _ ->
-                dialog.dismiss()
-            }
+            .setNegativeButton(getString(R.string.todo_cancel), null)
             .create()
         dialog.show()
     }
@@ -135,19 +125,21 @@ class TaskActivity : AppCompatActivity() {
         // We must deep copy the task object in order for the DiffUtil to recognize and compare the
         // new object with the old one.
         val modifiedTask = task.copy()
-        modifiedTask.title = dialogViewBinding.taskTitleEditText.text.toString()
-        modifiedTask.description = dialogViewBinding.taskDescriptionEditText.text.toString()
-        modifiedTask.startDate = dialogViewBinding.startDateEditText.text.toString()
-        modifiedTask.endDate = dialogViewBinding.endDateEditText.text.toString()
+        modifiedTask.apply {
+            title = dialogViewBinding.taskTitleEditText.text.toString()
+            description = dialogViewBinding.taskDescriptionEditText.text.toString()
+            startDate = dialogViewBinding.startDateEditText.text.toString()
+            endDate = dialogViewBinding.endDateEditText.text.toString()
+        }
 
-        mViewModel.updateTask(modifiedTask)
+        taskViewModel.updateTask(modifiedTask)
     }
 
     private fun openDeleteTaskDialog(task: Task) {
         val dialog = AlertDialog.Builder(this).setTitle(getString(R.string.todo_delete_task))
             .setMessage(getString(R.string.todo_delete_task_confirmation))
             .setPositiveButton(getString(R.string.todo_yes)) { _, _ ->
-                mViewModel.deleteTask(task)
+                taskViewModel.deleteTask(task)
             }.setNegativeButton(getString(R.string.todo_no), null).create()
         dialog.show()
     }
@@ -156,31 +148,23 @@ class TaskActivity : AppCompatActivity() {
         val isCompleted = task.isCompleted == true
         task.isCompleted = !isCompleted
 
-        mViewModel.updateTask(task)
+        taskViewModel.updateTask(task)
     }
 
     private fun openDatePickerDialog(editText: TextInputEditText) {
-        val calendar = Calendar.getInstance()
+        val currentDate = LocalDate.now()
         val dateSetListener = DatePickerDialog.OnDateSetListener { _, year, month, day ->
-            val date = Calendar.getInstance()
-            date.set(Calendar.YEAR, year)
-            date.set(Calendar.MONTH, month)
-            date.set(Calendar.DAY_OF_YEAR, day)
-            setDateText(editText, date)
+            val selectedDate = LocalDate.of(year, month, day)
+            editText.setText(selectedDate.toString())
         }
 
         DatePickerDialog(
             this,
             dateSetListener,
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
+            currentDate.year,
+            currentDate.monthValue,
+            currentDate.dayOfMonth,
         ).show()
-    }
-
-    private fun setDateText(editText: TextInputEditText, date: Calendar) {
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        editText.setText(sdf.format(date.time))
     }
 
     fun openListFilter() {
@@ -189,14 +173,11 @@ class TaskActivity : AppCompatActivity() {
         var tempFilter = currentFilter
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.todo_filter)
-            .setNegativeButton(R.string.todo_cancel) { dialog, _ ->
-                dialog.dismiss()
-            }
-            .setPositiveButton(R.string.todo_okay) { dialog, _ ->
+            .setNegativeButton(R.string.todo_cancel, null)
+            .setPositiveButton(R.string.todo_okay) { _, _ ->
                 currentFilter = tempFilter
                 showTaskList(false)
                 setFilteredList()
-                dialog.dismiss()
             }
             .setSingleChoiceItems(items, checkedItem) { _, index ->
                 tempFilter = items[index]
@@ -207,32 +188,27 @@ class TaskActivity : AppCompatActivity() {
     private fun setFilteredList() {
         when (currentFilter) {
             TASK -> {
-                mViewModel.getTaskList().observe(this, {
-                    mAdapter.setTaskItems(it)
-                })
+                taskViewModel.taskList.observe(this) {
+                    taskAdapter.setTaskItems(it)
+                }
             }
             INCOMPLETE -> {
-                mViewModel.getIncompleteTaskList().observe(this, {
-                    mAdapter.setTaskItems(it)
-                })
+                taskViewModel.incompleteTaskList.observe(this) {
+                    taskAdapter.setTaskItems(it)
+                }
             }
             COMPLETED -> {
-                mViewModel.getCompletedTaskList().observe(this, {
-                    mAdapter.setTaskItems(it)
-                })
+                taskViewModel.completedTaskList.observe(this) {
+                    taskAdapter.setTaskItems(it)
+                }
             }
         }
         showTaskList(true)
     }
 
     private fun showTaskList(visible: Boolean) {
-        if (visible) {
-            binding.progressIndicator.visibility = View.GONE
-            binding.rvTodoList.visibility = View.VISIBLE
-        } else {
-            binding.rvTodoList.visibility = View.GONE
-            binding.progressIndicator.visibility = View.VISIBLE
-        }
+        binding.progressIndicator.isGone = visible
+        binding.rvTodoList.isVisible = visible
     }
 
     companion object {

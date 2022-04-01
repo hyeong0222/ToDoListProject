@@ -8,22 +8,20 @@ import androidx.room.PrimaryKey
 data class Task(
 
     @PrimaryKey(autoGenerate = true)
-    var id: Long?,
+    var id: Long? = null,
 
     @ColumnInfo(name = "isCompleted")
     var isCompleted: Boolean? = false,
 
     @ColumnInfo(name = "title")
-    var title: String,
+    var title: String? = "",
 
     @ColumnInfo(name = "description")
     var description: String? = "",
 
     @ColumnInfo(name = "startDate")
-    var startDate: String?,
+    var startDate: String? = "",
 
     @ColumnInfo(name = "endDate")
-    var endDate: String?,
-) {
-    constructor(): this(null, false, "", "", "", "")
-}
+    var endDate: String? = "",
+)
