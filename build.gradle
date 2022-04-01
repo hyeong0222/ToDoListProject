@@ -3,7 +3,7 @@ buildscript {
     ext {
        // Version numbers
         recyclerview_version = "1.2.1"
-        room_version = "2.3.0"
+        room_version = "2.4.2"
         coroutines_version = "1.6.0"
         viewmodel_version = "2.4.0"
         livedata_version = "2.4.0"
