@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ToDoListProject</string>
+    <string name="todo_add_task">추가하기</string>
+    <string name="todo_edit_task">편집하기</string>
+    <string name="todo_delete_task">지우기</string>
+    <string name="todo_add">추가</string>
+    <string name="todo_okay">확인</string>
+    <string name="todo_cancel">취소</string>
+    <string name="todo_yes">네</string>
+    <string name="todo_no">아니요</string>
+    <string name="todo_delete_task_confirmation">이 할 일을 삭제 하시겠습니까?</string>
+    <string name="todo_filter">필터</string>
+</resources>
